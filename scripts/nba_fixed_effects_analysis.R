@@ -189,7 +189,6 @@ team_logo_urls <- c(
 
 NBA_Data$Logo <- team_logo_urls[NBA_Data$Team]
 
-
 ####################
 # OVERALL SCATTER PLOT
 ####################
@@ -217,34 +216,32 @@ three_point_pct_plot <- ggplot(
     color = "black"
   ) +
   
-  # LABEL SELECT NOTABLE TEAMS / SEASONS
+  # LABEL NBA CHAMPIONS (2014–2024)
   geom_text_repel(
     
     data = subset(
       NBA_Data,
       
-      (Team == "Golden State Warriors" & W >= 65) |
+      (Team == "San Antonio Spurs" & Year == "2014") |
         
-        (Team == "Houston Rockets" & W >= 60) |
+        (Team == "Golden State Warriors" & Year %in% c("2015", "2017", "2018", "2022")) |
         
-        (Team == "Milwaukee Bucks" & W >= 58) |
+        (Team == "Cleveland Cavaliers" & Year == "2016") |
         
-        (Team == "Detroit Pistons" & W <= 20) |
+        (Team == "Toronto Raptors" & Year == "2019") |
         
-        (Team == "Philadelphia 76ers" & W <= 20) |
+        (Team == "Los Angeles Lakers" & Year == "2020") |
         
-        (Team == "Charlotte Hornets" & W <= 22) |
+        (Team == "Milwaukee Bucks" & Year == "2021") |
         
-        (Team == "Indiana Pacers" & W >= 40 & W <= 48) |
+        (Team == "Denver Nuggets" & Year == "2023") |
         
-        (Team == "Miami Heat" & W >= 40 & W <= 48) |
-        
-        (Team == "New York Knicks" & W >= 40 & W <= 48)
+        (Team == "Boston Celtics" & Year == "2024")
       
     ),
     
     aes(
-      label = paste(Team, Year, sep = " ")
+      label = paste("🏆", Team, Year)
     ),
     
     size = 3.2,
@@ -345,6 +342,55 @@ three_point_pct_plot_per_year <- ggplot(
     color = "black"
   ) +
   
+  # LABEL NBA CHAMPION EACH SEASON
+  geom_text_repel(
+    
+    data = subset(
+      NBA_Data,
+      
+      (Team == "San Antonio Spurs" & Year == "2014") |
+        
+        (Team == "Golden State Warriors" & Year %in% c("2015", "2017", "2018", "2022")) |
+        
+        (Team == "Cleveland Cavaliers" & Year == "2016") |
+        
+        (Team == "Toronto Raptors" & Year == "2019") |
+        
+        (Team == "Los Angeles Lakers" & Year == "2020") |
+        
+        (Team == "Milwaukee Bucks" & Year == "2021") |
+        
+        (Team == "Denver Nuggets" & Year == "2023") |
+        
+        (Team == "Boston Celtics" & Year == "2024")
+      
+    ),
+    
+    aes(
+      label = paste("🏆", Team)
+    ),
+    
+    size = 2.8,
+    
+    max.overlaps = Inf,
+    
+    force = 2,
+    
+    box.padding = 0.5,
+    
+    point.padding = 0.7,
+    
+    segment.alpha = 0.5,
+    
+    segment.color = "black",
+    
+    bg.color = "white",
+    
+    bg.r = 0.12,
+    
+    min.segment.length = 0
+  ) +
+  
   facet_wrap(~Year) +
   
   labs(
@@ -401,7 +447,6 @@ ggsave(
   height = 9,
   bg = "white"
 )
-
 ####################
 # TEAM SCATTER PLOT
 ####################
