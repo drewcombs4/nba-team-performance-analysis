@@ -16,7 +16,9 @@ required_packages <- c(
   "writexl",
   "ggplot2",
   "ggimage",
-  "dplyr"
+  "dplyr",
+  "ggpubr",
+  "ggrepel"
 )
 
 installed_packages <- rownames(installed.packages())
@@ -187,6 +189,7 @@ team_logo_urls <- c(
 
 NBA_Data$Logo <- team_logo_urls[NBA_Data$Team]
 
+
 ####################
 # OVERALL SCATTER PLOT
 ####################
@@ -201,7 +204,70 @@ three_point_pct_plot <- ggplot(
   geom_smooth(
     method = "lm",
     se = FALSE,
-    color = "blue"
+    color = "blue",
+    linewidth = 1.2
+  ) +
+  
+  # CORRELATION DISPLAY
+  stat_cor(
+    method = "pearson",
+    label.x = 0.323,
+    label.y = 73,
+    size = 4.5,
+    color = "black"
+  ) +
+  
+  # LABEL SELECT NOTABLE TEAMS / SEASONS
+  geom_text_repel(
+    
+    data = subset(
+      NBA_Data,
+      
+      (Team == "Golden State Warriors" & W >= 65) |
+        
+        (Team == "Houston Rockets" & W >= 60) |
+        
+        (Team == "Milwaukee Bucks" & W >= 58) |
+        
+        (Team == "Detroit Pistons" & W <= 20) |
+        
+        (Team == "Philadelphia 76ers" & W <= 20) |
+        
+        (Team == "Charlotte Hornets" & W <= 22) |
+        
+        (Team == "Indiana Pacers" & W >= 40 & W <= 48) |
+        
+        (Team == "Miami Heat" & W >= 40 & W <= 48) |
+        
+        (Team == "New York Knicks" & W >= 40 & W <= 48)
+      
+    ),
+    
+    aes(
+      label = paste(Team, Year, sep = " ")
+    ),
+    
+    size = 3.2,
+    
+    max.overlaps = Inf,
+    
+    force = 3,
+    
+    force_pull = 0.5,
+    
+    box.padding = 1,
+    
+    point.padding = 1.2,
+    
+    segment.alpha = 0.5,
+    
+    segment.color = "black",
+    
+    bg.color = "white",
+    
+    bg.r = 0.15,
+    
+    min.segment.length = 0
   ) +
   
   labs(
@@ -210,15 +276,46 @@ three_point_pct_plot <- ggplot(
     y = "Wins"
   ) +
   
-  theme_minimal()
+  theme_minimal(base_size = 14) +
+  
+  theme(
+    plot.title = element_text(
+      size = 22,
+      face = "bold"
+    ),
+    
+    axis.title = element_text(
+      size = 16
+    ),
+    
+    axis.text = element_text(
+      size = 12,
+      color = "black"
+    ),
+    
+    panel.grid.minor = element_blank(),
+    
+    panel.background = element_rect(
+      fill = "white",
+      color = NA
+    ),
+    
+    plot.background = element_rect(
+      fill = "white",
+      color = NA
+    ),
+    
+    plot.margin = margin(15, 15, 15, 15)
+  )
 
 print(three_point_pct_plot)
 
 ggsave(
-  "outputs/three_point_pct_plot.pdf",
+  "outputs/main_scatterplot.png",
   plot = three_point_pct_plot,
   width = 8,
-  height = 6
+  height = 6,
+  bg = "white"
 )
 
 ####################
@@ -230,12 +327,22 @@ three_point_pct_plot_per_year <- ggplot(
   aes(x = `3P%`, y = W)
 ) +
   
-  geom_image(aes(image = Logo), size = 0.05) +
+  geom_image(aes(image = Logo), size = 0.06) +
   
   geom_smooth(
     method = "lm",
     se = FALSE,
-    color = "blue"
+    color = "blue",
+    linewidth = 1
+  ) +
+  
+  # CORRELATION DISPLAY
+  stat_cor(
+    method = "pearson",
+    label.x = 0.323,
+    label.y = 71,
+    size = 2.8,
+    color = "black"
   ) +
   
   facet_wrap(~Year) +
@@ -246,20 +353,53 @@ three_point_pct_plot_per_year <- ggplot(
     y = "Wins"
   ) +
   
-  theme_minimal() +
+  theme_minimal(base_size = 13) +
   
   theme(
     legend.position = "none",
-    strip.text = element_text(size = 10)
+    
+    strip.text = element_text(
+      size = 12,
+      face = "bold"
+    ),
+    
+    plot.title = element_text(
+      size = 22,
+      face = "bold"
+    ),
+    
+    axis.title = element_text(
+      size = 15
+    ),
+    
+    axis.text = element_text(
+      size = 10,
+      color = "black"
+    ),
+    
+    panel.grid.minor = element_blank(),
+    
+    panel.background = element_rect(
+      fill = "white",
+      color = NA
+    ),
+    
+    plot.background = element_rect(
+      fill = "white",
+      color = NA
+    ),
+    
+    plot.margin = margin(15, 15, 15, 15)
   )
 
 print(three_point_pct_plot_per_year)
 
 ggsave(
-  "outputs/three_point_pct_plot_per_year.pdf",
+  "outputs/yearly_relationship_plot.png",
   plot = three_point_pct_plot_per_year,
   width = 12,
-  height = 9
+  height = 9,
+  bg = "white"
 )
 
 ####################
@@ -276,13 +416,15 @@ three_point_pct_plot_per_team <- ggplot(
   geom_text(
     aes(label = Year),
     vjust = -2,
-    size = 1.5
+    size = 1.5,
+    color = "black"
   ) +
   
   geom_smooth(
     method = "lm",
     se = FALSE,
-    color = "blue"
+    color = "blue",
+    linewidth = 0.8
   ) +
   
   facet_wrap(~Team) +
@@ -293,20 +435,59 @@ three_point_pct_plot_per_team <- ggplot(
     y = "Wins"
   ) +
   
-  theme_minimal() +
+  theme_minimal(base_size = 12) +
   
   theme(
     legend.position = "none",
-    strip.text = element_text(size = 9)
+    
+    strip.text = element_text(
+      size = 10,
+      face = "bold",
+      color = "black"
+    ),
+    
+    plot.title = element_text(
+      size = 20,
+      face = "bold"
+    ),
+    
+    axis.title = element_text(
+      size = 13
+    ),
+    
+    axis.text = element_text(
+      size = 8,
+      color = "black"
+    ),
+    
+    panel.grid.minor = element_blank(),
+    
+    panel.background = element_rect(
+      fill = "white",
+      color = NA
+    ),
+    
+    plot.background = element_rect(
+      fill = "white",
+      color = NA
+    ),
+    
+    strip.background = element_rect(
+      fill = "white",
+      color = "gray80"
+    ),
+    
+    plot.margin = margin(15, 15, 15, 15)
   )
 
 print(three_point_pct_plot_per_team)
 
 ggsave(
-  "outputs/three_point_pct_plot_per_team.pdf",
+  "outputs/team_level_relationships.png",
   plot = three_point_pct_plot_per_team,
   width = 14,
-  height = 12
+  height = 12,
+  bg = "white"
 )
 
 ###################################################
